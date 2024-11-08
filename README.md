@@ -4,6 +4,7 @@
 Xindi Shan
 
 ## Website Link
+[Click Here](https://xindishan.github.io/biostat777-intro-Xindi-Shan/)
 
 
 ## Technical Details
