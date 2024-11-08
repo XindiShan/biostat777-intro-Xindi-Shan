@@ -1,0 +1,13 @@
+---
+title: "Xindi Shan"
+format: html
+image: "cindi.jpg"
+about:
+  template: jolla
+---
+
+Hello, and welcome! I’m Xindi Shan—you can also call me Cindi.
+
+I’m currently a first-year Biostatistics ScM student at Johns Hopkins Bloomberg School of Public Health, with a budding passion for machine learning and data science. Outside of academics, I’m a travel blogger, sharing my adventures and embracing every moment along the way.
+
+![](travel.jpg){fig-align="center" width="500"}

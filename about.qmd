@@ -1,0 +1,34 @@
+---
+title: "About"
+format: html
+---
+
+## Bio
+
+Hi! I'm currently an ScM student studying Biostatistics at Johns Hopkins Bloomberg School of Public Health. I’m originally from China and completed both high school and my undergrad in Toronto, Canada. While I am still refining my specific research interests, I am confident that they will center around machine learning and data science.
+
+## Education
+
+**Johns Hopkins Bloomberg School of Public Health** \| Baltimore, USA
+
+ScM in Biostatistics *(Aug 2024 - present)*
+
+**University of Toronto** \| Toronto, Canada
+
+HBSc in Applicational Mathematics in Economics and Finance *(Sep 2020 - Jun 2024)*
+
+Minor in Statistics *(Sep 2020 - Jun 2024)*
+
+## Experience
+
+**GET Summer School, Xiamen University** \| China
+
+Teaching Assistant *(Jun 2021 - Jul 2021)*
+
+**The First Affiliated Hospital of Wenzhou** \| China
+
+Coordinator *(Oct 2022 - Apr 2023)*
+
+**Baywell** \| China
+
+Intern *(May 2023 - Sep 2023)*

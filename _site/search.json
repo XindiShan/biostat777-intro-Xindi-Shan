@@ -1,0 +1,128 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Xindi Shan",
+    "section": "",
+    "text": "Hello, and welcome! I’m Xindi Shan—you can also call me Cindi.\nI’m currently a first-year Biostatistics ScM student at Johns Hopkins Bloomberg School of Public Health, with a budding passion for machine learning and data science. Outside of academics, I’m a travel blogger, sharing my adventures and embracing every moment along the way."
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "Hi! I’m currently an ScM student studying Biostatistics at Johns Hopkins Bloomberg School of Public Health. I’m originally from China and completed both high school and my undergrad in Toronto, Canada. While I am still refining my specific research interests, I am confident that they will center around machine learning and data science."
+  },
+  {
+    "objectID": "analysis.html",
+    "href": "analysis.html",
+    "title": "King County Housing Price Analysis",
+    "section": "",
+    "text": "When purchasing a house in King County, potential buyers often consider factors such as construction quality, size, and age of the property. Using a sample from the King County housing dataset, I explore: To what extent do these fundamental housing characteristics - construction grade, living area, and year built - explain the variation in housing prices across the county?\n\n\n\n\n\n\nNote\n\n\n\nSpecifically, we are considering:\n\nwhat is the relationship between a house’s living area and its price, and does the relationships differ by grade?\nhow have housing prices evolved over time, for different construction grades?"
+  },
+  {
+    "objectID": "analysis.html#exploratory-data-analysis",
+    "href": "analysis.html#exploratory-data-analysis",
+    "title": "analysis",
+    "section": "",
+    "text": "We only focus on the factors that most residents are caring about.\n\nlibrary(tidyverse) \n\n── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──\n✔ dplyr     1.1.4     ✔ readr     2.1.5\n✔ forcats   1.0.0     ✔ stringr   1.5.0\n✔ ggplot2   3.5.1     ✔ tibble    3.2.1\n✔ lubridate 1.9.3     ✔ tidyr     1.3.1\n✔ purrr     1.0.2     \n── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──\n✖ dplyr::filter() masks stats::filter()\n✖ dplyr::lag()    masks stats::lag()\nℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors\n\nlibrary(latex2exp)\nlibrary(gridExtra)\n\n\nAttaching package: 'gridExtra'\n\nThe following object is masked from 'package:dplyr':\n\n    combine\n\nlibrary(kableExtra)\n\n\nAttaching package: 'kableExtra'\n\nThe following object is masked from 'package:dplyr':\n\n    group_rows\n\nlibrary(car)\n\nWarning: package 'car' was built under R version 4.3.3\n\n\nLoading required package: carData\n\nAttaching package: 'car'\n\nThe following object is masked from 'package:dplyr':\n\n    recode\n\nThe following object is masked from 'package:purrr':\n\n    some\n\nlibrary(ggplot2)\nset.seed(777)\ndata=read.csv(\"kc_house_data.csv\")\nattach(data)\nrows &lt;- sample(1:21613, 200, replace=FALSE)\ndata_fr &lt;- data[rows,]\ndata1 &lt;- na.omit(data_fr)\ndata &lt;- data1 %&gt;%\n  group_by(price) %&gt;%\n  select(price, grade, yr_built, sqft_living) %&gt;%\n  arrange(desc(price))\n\ndata\n\n# A tibble: 200 × 4\n# Groups:   price [166]\n     price grade yr_built sqft_living\n     &lt;dbl&gt; &lt;int&gt;    &lt;int&gt;       &lt;int&gt;\n 1 1950000     8     2012        3440\n 2 1940000    12     2000        7220\n 3 1650000    10     1946        4285\n 4 1595000     8     1928        2980\n 5 1590000     9     1953        3240\n 6 1557600     9     1960        2700\n 7 1520000    10     2003        3720\n 8 1500000     9     1968        2590\n 9 1495000     9     1916        3770\n10 1400000     9     1964        3850\n# ℹ 190 more rows"
+  },
+  {
+    "objectID": "analysis.html#build-the-model",
+    "href": "analysis.html#build-the-model",
+    "title": "analysis",
+    "section": "build the model",
+    "text": "build the model\nBefore building the model, firstly transform the data. Use logarithm in the following modelling so that it is better for visualization.\n\ndata$logprice=log(data$price)\n\n\n# construct first model                            \nm1=lm(logprice~yr_built+sqft_living+grade,data=data)\nsummary(m1)\n\n\nCall:\nlm(formula = logprice ~ yr_built + sqft_living + grade, data = data)\n\nResiduals:\n     Min       1Q   Median       3Q      Max \n-0.95764 -0.19980  0.02181  0.20201  1.35071 \n\nCoefficients:\n              Estimate Std. Error t value Pr(&gt;|t|)    \n(Intercept)  2.194e+01  1.711e+00  12.822  &lt; 2e-16 ***\nyr_built    -5.773e-03  9.036e-04  -6.389 1.19e-09 ***\nsqft_living  1.632e-04  4.295e-05   3.800 0.000193 ***\ngrade        2.813e-01  3.691e-02   7.621 1.05e-12 ***\n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\nResidual standard error: 0.3461 on 196 degrees of freedom\nMultiple R-squared:  0.5556,    Adjusted R-squared:  0.5488 \nF-statistic: 81.69 on 3 and 196 DF,  p-value: &lt; 2.2e-16\n\n\nWe can see that p-values of all the variables is statistically significant, meaning all variables are strongly associated with the price.\nLet’s check the model.\n\n\nAnalysis of Variance Table\n\nModel 1: logprice ~ yr_built + sqft_living + grade\nModel 2: logprice ~ sqft_living + grade\n  Res.Df    RSS Df Sum of Sq      F   Pr(&gt;F)    \n1    196 23.479                                 \n2    197 28.368 -1   -4.8895 40.817 1.19e-09 ***\n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\n\n\nCall:\nlm(formula = logprice ~ sqft_living + grade, data = data)\n\nResiduals:\n     Min       1Q   Median       3Q      Max \n-0.83063 -0.26895  0.00214  0.20635  1.12466 \n\nCoefficients:\n             Estimate Std. Error t value Pr(&gt;|t|)    \n(Intercept) 1.109e+01  2.303e-01  48.142  &lt; 2e-16 ***\nsqft_living 1.670e-04  4.709e-05   3.548 0.000486 ***\ngrade       2.120e-01  3.868e-02   5.480 1.29e-07 ***\n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\nResidual standard error: 0.3795 on 197 degrees of freedom\nMultiple R-squared:  0.4631,    Adjusted R-squared:  0.4576 \nF-statistic: 84.95 on 2 and 197 DF,  p-value: &lt; 2.2e-16\n\n\nBy Partial F Test, p-value&lt;0.05, meaning there was no need to delete any variables in Model1.\n\n#vif test\nvif(m1)\n\n   yr_built sqft_living       grade \n   1.208065    2.356443    2.578932 \n\n\nAll predictors from Model1 had lower correlation among each other, which was not problematic.\nThus, we can make sure that the housing prices were always impacted by grades, years built, and areas of living."
+  },
+  {
+    "objectID": "analysis.html#visualization",
+    "href": "analysis.html#visualization",
+    "title": "analysis",
+    "section": "Visualization",
+    "text": "Visualization\n\n# Add log_price to dataset\ndata$log_price &lt;- log(data$price)\n\n\n\n\n\n\n\nData Preprocessing Step\n\n\n\nBefore creating visualizations, we first transformed the price variable using natural logarithm (log(price)). This transformation is common in housing price analysis because:\n\nHouse prices typically follow a right-skewed distribution\nIt helps normalize the data\nMakes it easier to interpret percentage changes in price\n\n\n\n\n# 1. Enhanced Box Plot with Points - Focus on Grade Distribution\np1 &lt;- ggplot(data, aes(x = factor(grade, levels = sort(unique(grade))), y = log_price)) +\n  geom_boxplot(fill = \"lightblue\", alpha = 0.5) +\n  geom_violin(alpha = 0.2) +\n  geom_jitter(width = 0.2, alpha = 0.1) +\n  theme_minimal() +\n  labs(title = \"Price Distribution Across Housing Grades in King County\",\n       subtitle = \"Showing price spread and density for each grade level\",\n       x = \"Grade\",\n       y = \"log(Price)\") +\n  theme(axis.text.x = element_text(angle = 0))\np1\n\nWarning: Groups with fewer than two datapoints have been dropped.\nℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.\n\n\n\n\n\n\n\n\n\n\n# 2. Faceted Year Analysis - Temporal Patterns by Grade\n\np2 &lt;- ggplot(data, aes(x = yr_built, y = log_price)) +\n  # Basic scatter plot\n  geom_point(alpha = 0.3, size = 1) +\n  # Simple trend line\n  geom_smooth(method = \"lm\", se = TRUE, color = \"red\") +\n  # Facet by grade\n  facet_wrap(~grade, scales = \"free_y\", ncol = 3) +\n  theme_minimal() +\n  labs(title = \"Price Trends Over Time by Grade\",\n       subtitle = \"Points show individual houses, red line shows linear trend\",\n       x = \"Year Built\",\n       y = \"log(Price)\") +\n  theme(strip.background = element_rect(fill = \"lightgray\"),\n        strip.text = element_text(color = \"black\"))\n\np2\n\n`geom_smooth()` using formula = 'y ~ x'\n\n\n\n\n\n\n\n\n\n\n# 3. Size-Price Relationship by grade\np3 &lt;- ggplot(data, aes(x = sqft_living, y = log_price)) +\n  # Points colored by grade\n  geom_point(aes(color = as.factor(grade)), alpha = 0.6) +\n  # Trend line\n  geom_smooth(method = \"lm\", se = TRUE, color = \"black\") +\n  scale_color_viridis_d(name = \"Grade\") +\n  theme_minimal() +\n  labs(title = \"Price-Size Relationship by Grade\",\n       subtitle = \"Points colored by grade, black line shows overall trend\",\n       x = \"Living Area (sqft)\",\n       y = \"log(Price)\")\n\np3\n\n`geom_smooth()` using formula = 'y ~ x'"
+  },
+  {
+    "objectID": "analysis.html#summary-and-interpretation",
+    "href": "analysis.html#summary-and-interpretation",
+    "title": "King County Housing Price Analysis",
+    "section": "Summary and Interpretation",
+    "text": "Summary and Interpretation\nThe examination of King County’s housing market reveals several significant patterns. Properties with higher grade values consistently command higher log_price values. The relationship between sqft_living and log_price is particularly strong in high-grade properties, reflecting the luxury segment of the Seattle market. Analysis of yr_built shows an upward trend in log_price across all grades, influenced by the region’s tech industry growth. Moreover, larger homes (measured by sqft_living) typically correspond to higher grade values, indicating a strong relationship between construction quality and house size."
+  },
+  {
+    "objectID": "analysis.html#data-wrangling",
+    "href": "analysis.html#data-wrangling",
+    "title": "King County Housing Price Analysis",
+    "section": "Data Wrangling",
+    "text": "Data Wrangling\nWe need to select the only variables we want to explore and pick 200 out of all the observations in the dataset as a sample.\n\nlibrary(tidyverse) \n\n── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──\n✔ dplyr     1.1.4     ✔ readr     2.1.5\n✔ forcats   1.0.0     ✔ stringr   1.5.0\n✔ ggplot2   3.5.1     ✔ tibble    3.2.1\n✔ lubridate 1.9.3     ✔ tidyr     1.3.1\n✔ purrr     1.0.2     \n── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──\n✖ dplyr::filter() masks stats::filter()\n✖ dplyr::lag()    masks stats::lag()\nℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors\n\nlibrary(gridExtra)  \n\n\nAttaching package: 'gridExtra'\n\nThe following object is masked from 'package:dplyr':\n\n    combine\n\nlibrary(viridis)    \n\nLoading required package: viridisLite\n\nlibrary(kableExtra) \n\n\nAttaching package: 'kableExtra'\n\nThe following object is masked from 'package:dplyr':\n\n    group_rows\n\ndata=read.csv(\"kc_house_data.csv\")\nattach(data)\n\nrows &lt;- sample(1:21613, 200, replace=FALSE)\ndata_fr &lt;- data[rows,]\ndata1 &lt;- na.omit(data_fr)\ndata &lt;- data1 %&gt;%\n  group_by(price) %&gt;%\n  select(price, grade, yr_built, sqft_living) %&gt;%\n  arrange(desc(price))\n\ndata\n\n# A tibble: 200 × 4\n# Groups:   price [169]\n     price grade yr_built sqft_living\n     &lt;dbl&gt; &lt;int&gt;    &lt;int&gt;       &lt;int&gt;\n 1 2700000    11     2005        5305\n 2 1965220    10     2003        4370\n 3 1959000    11     1988        6200\n 4 1735000    10     1929        4870\n 5 1490000    12     1990        4560\n 6 1295000    10     1968        3490\n 7 1050000     8     1927        2250\n 8 1045000     9     1996        3560\n 9 1025000    10     1977        3320\n10 1000000     9     1996        2044\n# ℹ 190 more rows"
+  },
+  {
+    "objectID": "analysis.html#visualization-analysis",
+    "href": "analysis.html#visualization-analysis",
+    "title": "King County Housing Price Analysis",
+    "section": "Visualization Analysis",
+    "text": "Visualization Analysis\n\n# Add log_price to dataset\ndata$log_price &lt;- log(data$price)\n\n\n\n\n\n\n\nData Preprocessing Step\n\n\n\nBefore creating visualizations, we first transformed the price variable using natural logarithm (log(price)). This transformation is common in housing price because:\n\nHouse prices typically follow a right-skewed distribution (James et al. 2013)\nIt helps normalize the data\nMakes it easier to interpret percentage changes in price\n\n\n\n\n# 1. Enhanced Box Plot with Points - Focus on Grade Distribution\n\np1 &lt;- ggplot(data, aes(x = factor(grade, levels = sort(unique(grade))), y = log_price)) +\n  geom_boxplot(fill = \"lightblue\", alpha = 0.5) +\n  geom_violin(alpha = 0.2) +\n  geom_jitter(width = 0.2, alpha = 0.1) +\n  theme_minimal() +\n  labs(title = \"Price Distribution Across Housing Grades in King County\",\n       subtitle = \"Showing price spread and density for each grade level\",\n       caption = \"Graph by Xindi Shan (2024)\",\n       x = \"Grade\",\n       y = \"log(Price)\") +\n  theme(axis.text.x = element_text(angle = 0))\n\np1\n\nWarning: Groups with fewer than two datapoints have been dropped.\nℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.\nGroups with fewer than two datapoints have been dropped.\nℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.\nGroups with fewer than two datapoints have been dropped.\nℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.\n\n\n\n\n\n\n\n\n\n\n# 2. Faceted Year Analysis - Temporal Patterns by Grade\n\np2 &lt;- ggplot(data, aes(x = yr_built, y = log_price)) +\n  geom_point(alpha = 0.3, size = 1) +\n  geom_smooth(method = \"lm\", se = TRUE, color = \"red\") +\n  # Facet by grade\n  facet_wrap(~grade, scales = \"free_y\", ncol = 3) +\n  theme_minimal() +\n  labs(title = \"Price Trends Over Time by Grade\",\n       subtitle = \"Points show individual houses, red line shows linear trend\",\n       caption = \"Graph by Xindi Shan (2024)\",\n       x = \"Year Built\",\n       y = \"log(Price)\") +\n  theme(strip.background = element_rect(fill = \"lightgray\"),\n        strip.text = element_text(color = \"black\"))\n\np2\n\n`geom_smooth()` using formula = 'y ~ x'\n\n\n\n\n\n\n\n\n\n\n# 3. Size-Price Relationship With Grade\n\np3 &lt;- ggplot(data, aes(x = sqft_living, y = log_price)) +\n  # Points colored by grade\n  geom_point(aes(color = as.factor(grade)), alpha = 0.6) +\n  geom_smooth(method = \"lm\", se = TRUE, color = \"black\") +\n  scale_color_viridis_d(name = \"Grade\") +\n  theme_minimal() +\n  labs(title = \"Price-Size Relationship by Grade\",\n       subtitle = \"Points colored by grade, black line shows overall trend\",\n       caption = \"Graph by Xindi Shan (2024)\",\n       x = \"Living Area (sqft)\",\n       y = \"log(Price)\")\n\np3\n\n`geom_smooth()` using formula = 'y ~ x'\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTip\n\n\n\nNote that our analysis focuses on a random sample of 200 houses from the full King County dataset."
+  },
+  {
+    "objectID": "analysis.html#question",
+    "href": "analysis.html#question",
+    "title": "King County Housing Price Analysis",
+    "section": "",
+    "text": "When purchasing a house in King County, potential buyers often consider factors such as construction quality, size, and age of the property. Using a sample from the King County housing dataset, I explore: To what extent do these fundamental housing characteristics - construction grade, living area, and year built - explain the variation in housing prices across the county?\n\n\n\n\n\n\nNote\n\n\n\nSpecifically, we are considering:\n\nwhat is the relationship between a house’s living area and its price, and does the relationships differ by grade?\nhow have housing prices evolved over time, for different construction grades?"
+  },
+  {
+    "objectID": "analysis.html#data-source",
+    "href": "analysis.html#data-source",
+    "title": "King County Housing Price Analysis",
+    "section": "Data Source",
+    "text": "Data Source\nThe data used in this analysis comes from the King County House Sales dataset, which is available on Kaggle. The dataset contains house sale prices for King County, which includes Seattle and its surrounding areas, with homes sold between May 2014 and May 2015.\n\nData Dictionary\n\n\nOur sample represents approximately 1% of all house sales in King County during this period, providing a snapshot of the market dynamics.\nThe variables used in our analysis are defined as follows:\n\n\n\n\n\n\n\nVariable\nDescription\n\n\n\n\nprice\nSale price of the house in dollars\n\n\ngrade\nGrade of the house on King County grading system (1-13)• 1-3: Poor construction• 4-6: Low quality• 7: Average• 8-10: Good quality• 11-13: High quality/Luxury\n\n\nyr_built\nYear when the house was built\n\n\nsqft_living\nSquare footage of living space in the home"
+  },
+  {
+    "objectID": "analysis.html#data-source-1",
+    "href": "analysis.html#data-source-1",
+    "title": "King County Housing Price Analysis",
+    "section": "Data Source",
+    "text": "Data Source\nThe data used in this analysis comes from the King County House Sales dataset, which is available on Kaggle. The dataset contains house sale prices for King County, which includes Seattle and its surrounding areas, with homes sold between May 2014 and May 2015.\n\nData Dictionary\nThe variables used in our analysis are defined as follows:\n\n\n\n\n\n\n\nVariable\nDescription\n\n\n\n\nprice\nSale price of the house in dollars\n\n\ngrade\nGrade of the house on King County grading system (1-13)• 1-3: Poor construction• 4-6: Low quality• 7: Average• 8-10: Good quality• 11-13: High quality/Luxury\n\n\nyr_built\nYear when the house was built\n\n\nsqft_living\nSquare footage of living space in the home"
+  },
+  {
+    "objectID": "analysis.html#dataset",
+    "href": "analysis.html#dataset",
+    "title": "King County Housing Price Analysis",
+    "section": "Dataset",
+    "text": "Dataset\n\nData Source\nThe data used in this analysis comes from the King County House Sales dataset, which is available on Kaggle (Burhanyk 2023). The dataset contains house sale prices for King County, which includes Seattle and its surrounding areas, with homes sold between May 2014 and May 2015.\n\n\nData Dictionary\n\n\nWhile we focus on these four key features that most directly influence price, the original full dataset contains 21 variables including bathrooms, floors, and waterfront status.\nThe variables used in our analysis are defined as follows:\n\n\n\n\n\n\n\nVariable\nDescription\n\n\n\n\nprice\nSale price of the house in dollars\n\n\ngrade\nGrade of the house on King County grading system (1-13)• 1-3: Poor construction• 4-6: Low quality• 7: Average• 8-10: Good quality• 11-13: High quality/Luxury\n\n\nyr_built\nYear when the house was built\n\n\nsqft_living\nSquare footage of living space in the home\n\n\n\n(King County Department of Assessments 2015)"
+  },
+  {
+    "objectID": "analysis.html#intended-audience",
+    "href": "analysis.html#intended-audience",
+    "title": "King County Housing Price Analysis",
+    "section": "Intended Audience",
+    "text": "Intended Audience\nThis analysis is designed for potential homebuyers and real estate professionals in King County who need to understand the relationship between house characteristics and prices. The information is presented in an accessible way for readers with basic statistical knowledge."
+  },
+  {
+    "objectID": "analysis.html#function-used",
+    "href": "analysis.html#function-used",
+    "title": "King County Housing Price Analysis",
+    "section": "Function Used",
+    "text": "Function Used\ndplyr package: %&gt;%, group_by(), select(), arrange(), desc()\nggplot2 package: ggplot(), geom_boxplot(), geom_violin(), geom_jitter(), geom_point(), geom_smooth(), facet_wrap(), theme_minimal(), labs(), scale_color_viridis_d()"
+  },
+  {
+    "objectID": "about.html#bio",
+    "href": "about.html#bio",
+    "title": "About",
+    "section": "",
+    "text": "Hi! I’m currently an ScM student studying Biostatistics at Johns Hopkins Bloomberg School of Public Health. I’m originally from China and completed both high school and my undergrad in Toronto, Canada. While I am still refining my specific research interests, I am confident that they will center around machine learning and data science."
+  },
+  {
+    "objectID": "about.html#education",
+    "href": "about.html#education",
+    "title": "About",
+    "section": "Education",
+    "text": "Education\nJohns Hopkins Bloomberg School of Public Health | Baltimore, USA\nScM in Biostatistics (Aug 2024 - present)\nUniversity of Toronto | Toronto, Canada\nHBSc in Applicational Mathematics in Economics and Finance (Sep 2020 - Jun 2024)\nMinor in Statistics (Sep 2020 - Jun 2024)"
+  },
+  {
+    "objectID": "about.html#experience",
+    "href": "about.html#experience",
+    "title": "About",
+    "section": "Experience",
+    "text": "Experience\nGET Summer School, Xiamen University | China\nTeaching Assistant (Jun 2021 - Jul 2021)\nThe First Affiliated Hospital of Wenzhou | China\nCoordinator (Oct 2022 - Apr 2023)\nBaywell | China\nIntern (May 2023 - Sep 2023)"
+  }
+]
